@@ -25,8 +25,8 @@ class UserController extends Controller
             $usuario = User::select('nia', 'name')->where('id', $t->user_id)->get();
             $cuales = Detalles_ticket::select('bocadillo_id', 'ingrediente_extra', 'descartados', 'cantidad')->where('ticket_id', $t->id)->distinct()->get();
             $b = Bocadillo::find($cuales[0]->bocadillo_id);
-            $e = Ingredientes_extra::separar($cuales[0]->ingrediente_extra);
-            $ing = Ingrediente::separar($cuales[0]->descartados);
+            $e = $cuales[0]->ingrediente_extra;
+            $ing = $cuales[0]->descartados;
             $tmp = [$usuario[0]->nia, $usuario[0]->name, $t->hora, $b, $e, $ing, $cuales[0]->cantidad];
             array_push($datos, $tmp);
         }

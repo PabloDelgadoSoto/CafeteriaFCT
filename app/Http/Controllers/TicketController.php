@@ -56,12 +56,6 @@ class TicketController extends Controller
         array_push($guardar, $ticket);
 
         foreach (Cart::content() as $producto) {
-            $extras = count($producto->options->extra);
-            $ingredientes = count($producto->options->ings);
-            $nExtras = "";
-
-            $nIng = "";
-
             $t = new Detalles_ticket();
             $t->cantidad = $producto->qty;
             $t->bocadillo_id = $producto->name->id;
@@ -69,6 +63,9 @@ class TicketController extends Controller
 
             // Agrega los extras al objeto Detalles_ticket
             $t->ingrediente_extra = implode(", ", $producto->options->extra);
+
+            // Agrega los ingredientes descartados al objeto Detalles_ticket
+            $t->descartados = implode(", ", $producto->options->ings);
 
             // Guarda el Detalles_ticket en la base de datos
             $t->save();
@@ -87,13 +84,14 @@ class TicketController extends Controller
 
             // Obtiene los ingredientes del bocadillo a través de la tabla de elaboraciones
             $elaboraciones = Elaboracion::where('bocadillo_id', $producto->name->id)->get();
-
-            // Actualiza la cantidad de cada ingrediente
             foreach ($elaboraciones as $elaboracion) {
                 $ingrediente = Ingrediente::find($elaboracion->ingrediente_id);
                 if ($ingrediente) {
-                    $ingrediente->cantidad -= $producto->qty;
-                    $ingrediente->save();
+                    // Si el ingrediente no está en la lista de descartados, resta la cantidad
+                    if (!in_array($ingrediente->nombre, $producto->options->ings)) {
+                        $ingrediente->cantidad -= $producto->qty;
+                        $ingrediente->save();
+                    }
                 } else {
                     // Maneja el caso en que el ingrediente no se encuentra
                 }
