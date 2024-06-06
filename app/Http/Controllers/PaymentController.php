@@ -29,9 +29,9 @@ class PaymentController extends Controller
     public function pay(Request $request)
 {
     try {
+        session(['hora' => $request->hora]);
         // Verifica el stock antes de pagar
         $items = Cart::content();
-
         foreach ($items as $item) {
             $extrasArray = explode(", ", $item->options->extras);
             foreach ($extrasArray as $extraName) {
@@ -107,13 +107,15 @@ class PaymentController extends Controller
                 $payment->payment_status = 'completed'; // Asumiendo que el estado de pago es 'completed'
                 $payment->save();
             }
+            $hora = session('hora');
+
             $request->merge([
                 'date' => now(),
                 'total' => $amount['total'],
-                'hora' => now()->format('H:i:s'),
                 'user_id' => auth()->id(),
-            ]);
+                'hora' => $hora
 
+            ]);
 
             $ticketController = new TicketController();
             $ticketController->store($request);

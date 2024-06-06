@@ -45,14 +45,15 @@ class TicketController extends Controller
         return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
     }
     */
-        $hora = strtotime($request->hora);
+
         $guardar = [];
         $ticket = new Ticket();
         $ticket->fecha = date("Y-m-d");
         $ticket->total = $request->total;
-        $ticket->hora = $hora; // cambiar
+        $ticket->hora = $request->hora; // cambiar
         $ticket->user_id = $request->user_id;
         $ticket->save(); // Guarda el ticket en la base de datos
+
         array_push($guardar, $ticket);
 
         foreach (Cart::content() as $producto) {
