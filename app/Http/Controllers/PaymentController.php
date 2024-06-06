@@ -19,32 +19,62 @@ class PaymentController extends Controller
     }
 
     public function pay(Request $request)
-    {
-        try {
-            $response = $this->gateway->purchase([
-                'amount' => $request->amount,
-                'currency' => env('PAYPAL_CURRENCY'),
-                'returnUrl' => route('payment.success'),
-                'cancelUrl' => route('payment.cancel'),
-            ])->send();
+{
+    try {
+        $response = $this->gateway->purchase([
+            'amount' => $request->amount,
+            'currency' => env('PAYPAL_CURRENCY'),
+            'returnUrl' => route('payment.success'),
+            'cancelUrl' => route('payment.cancel'),
+        ])->send();
 
-            if ($response->isRedirect()) {
-                $response->redirect();
-            } else {
-                return $response->getMessage();
-            }
-        } catch (\Throwable $th) {
-            return $th->getMessage();
+        if ($response->isRedirect()) {
+            // Redirige al usuario a PayPal
+            return $response->redirect();
+        } else {
+            return $response->getMessage();
         }
+    } catch (\Throwable $th) {
+        return $th->getMessage();
+    }
+}
 
+public function success(Request $request)
+{
+    $transactionId = $request->get('paymentId');
+    $payerId = $request->get('PayerID');
+
+    if ($transactionId && $payerId) {
+        $response = $this->gateway->completePurchase([
+            'transactionReference' => $transactionId,
+            'payerId' => $payerId,
+        ])->send();
+
+        $data = $response->getData();
+
+        if ($response->isSuccessful()) {
+            // Accede a 'amount' en la primera transacción
+            $amount = $data['transactions'][0]['amount'];
+            $payerEmail = $data['payer']['payer_info']['email']; // Asume que el correo electrónico del pagador está disponible aquí
+
+            // Guarda los datos en la base de datos
+            $payment = new Payment();
+            $payment->payment_id = $transactionId;
+            $payment->payer_id = $payerId;
+            $payment->payer_email = $payerEmail; // Agrega esta línea
+            $payment->amount = $amount['total'];
+            $payment->currency = $amount['currency'];
+            $payment->payment_status = 'completed'; // Asumiendo que el estado de pago es 'completed'
+            $payment->save();
+        }
     }
 
-    public function success()
-{
-    // Aquí puedes manejar la lógica después de un pago exitoso.
-    // Por ejemplo, puedes guardar la información del pago en la base de datos, enviar un correo electrónico de confirmación al usuario, etc.
-
     // Redirige al usuario a la página de inicio
-    return redirect()->route('home');
+    return redirect('/');
 }
+
+    public function cancel()
+    {
+        return redirect()->route('home')->with('error', 'Payment was cancelled');
+    }
 }
