@@ -21,13 +21,13 @@ class CartController extends Controller
         $datos = $request->all();
         $ing = [];
         foreach ($datos as $clave => $valor) {
-            if($valor=='on'){
+            if ($valor == 'on') {
                 array_push($ing, $clave);
             }
         }
 
         $bocadillo = Bocadillo::find($request->bocata);
-//lo mismo se puede hacer con formrequest
+        //lo mismo se puede hacer con formrequest
         if (isset($request->cantidad)) {
             $qty = $request->cantidad;
         } else {
@@ -38,7 +38,7 @@ class CartController extends Controller
             $errors = new MessageBag(['unidades' => ['La cantidad no puede ser menor a 1.']]);
             return Redirect::back()->withErrors($errors);
         }
-/*
+        /*
         // Busca el bocadillo en el carrito
         $cartItem = Cart::search(function ($cartItem, $rowId) use ($bocadillo) {
             return $cartItem->id === $bocadillo->id;
@@ -49,7 +49,7 @@ class CartController extends Controller
 
         $cantidadTotal = $cantidadCarrito + $qty;
 */
-/*  Deberia hacerse antes de esto
+        /*  Deberia hacerse antes de esto
         if ($qty > $bocadillo->unidades) {
             $errors = new MessageBag(['unidades' => ['No hay existencias suficientes para el bocadillo']]);
             return Redirect::back()->withErrors($errors);
@@ -58,9 +58,9 @@ class CartController extends Controller
 
         $extras = [];
         $quitar = [];
-        foreach($ing as $e){
+        foreach ($ing as $e) {
             $tmp = mb_substr($e, 0, 1);
-            if($tmp == 'i'){
+            if ($tmp == 'i') {
                 $nuevo = substr($e, 1);
                 array_push($quitar, (int) $nuevo);
             } else {
@@ -71,9 +71,9 @@ class CartController extends Controller
         $precioInicial = 0;
         $hoy = date("Y-m-d");
         $diaSemana = date('w', strtotime($hoy));
-        if((int) $diaSemana == MIERCOLES){
+        if ((int) $diaSemana == MIERCOLES) {
             $precioInicial = $bocadillo->descuento;
-            if($bocadillo->descuento == null){
+            if ($bocadillo->descuento == null) {
                 $precioInicial = $bocadillo->precio;
             }
         } else {
@@ -84,14 +84,14 @@ class CartController extends Controller
         $ingredientes = [];
         $ela = Elaboracion::all()->where('bocadillo_id', $bocadillo->id);
         $todo = [];
-        foreach($ela as $e){
+        foreach ($ela as $e) {
             array_push($todo, $e->ingrediente_id);
         }
 
-        if($bocadillo->desmontable){
-            foreach($todo as $t){
+        if ($bocadillo->desmontable) {
+            foreach ($todo as $t) {
                 $p = Ingrediente::find($t);
-                if(!in_array($t, $quitar)){
+                if (!in_array($t, $quitar)) {
                     array_push($ingredientes, $p->nombre);
                 }
             }
@@ -99,7 +99,7 @@ class CartController extends Controller
 
 
         $nombres = [];
-        foreach($extras as $e){
+        foreach ($extras as $e) {
             $p = Ingredientes_extra::find($e);
             $precioTotal += $p->coste_extra;
             array_push($nombres, $p->nombre);
@@ -116,12 +116,13 @@ class CartController extends Controller
         ]);
 
         return Redirect::back()->with('success', 'Bocadillo añadido al carrito correctamente.');
-
     }
 
     public function checkout()
     {
-        return view('carrito.checkout');
+        $total = Cart::total();
+
+        return view('carrito.checkout', compact('total'));
     }
 
     public function remove($rowId)

@@ -78,5 +78,12 @@
     @endforeach
     </tbody>
 </table>
+
+<form action="{{ route('payment.pay') }}" method="post">
+    @csrf
+    <input type="hidden" name="amount" value="{{ $total }}">
+    <button type="submit">Pagar</button>
+</form>
+
 </div>
 @endsection

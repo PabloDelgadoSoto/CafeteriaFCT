@@ -14,6 +14,9 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ElaboracionController;
 use App\Http\Controllers\TipoController;
 use App\Http\Controllers\AjaxController;
+use App\Http\Controllers\PaymentController;
+
+use App\Models\Payment;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +30,11 @@ use App\Http\Controllers\AjaxController;
 */
 
 Route::get('/', HomeController::class)->name('home');
+
+Route::post('pay' , [PaymentController::class, 'pay'])->name('payment.pay');
+Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+Route::post('/paypal/pay', 'App\Http\Controllers\PaymentController@pay');
 
 Route::post('/verificarDisponibilidad', [BocadilloController::class, 'verificarDisponibilidad'])->name('verificarDisponibilidad');
 
