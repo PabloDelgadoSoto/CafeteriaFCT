@@ -50,7 +50,7 @@ class TicketController extends Controller
         $ticket = new Ticket();
         $ticket->fecha = date("Y-m-d");
         $ticket->total = $request->total;
-        $ticket->hora = $hora;
+        $ticket->hora = $hora; // cambiar
         $ticket->user_id = $request->user_id;
         $ticket->save(); // Guarda el ticket en la base de datos
         array_push($guardar, $ticket);
