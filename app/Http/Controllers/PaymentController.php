@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 use Omnipay\Omnipay;
+use App\Http\Controllers\CartController;
 
 class PaymentController extends Controller
 {
     private $gateway;
+
 
     public function __construct()
     {
@@ -21,12 +23,20 @@ class PaymentController extends Controller
     public function pay(Request $request)
 {
     try {
+
+        $cart = new CartController();
+        $total = $cart->getTotal();
+
         $response = $this->gateway->purchase([
-            'amount' => $request->amount,
+            'amount' => $total,
             'currency' => env('PAYPAL_CURRENCY'),
             'returnUrl' => route('payment.success'),
             'cancelUrl' => route('payment.cancel'),
+
+
         ])->send();
+
+
 
         if ($response->isRedirect()) {
             // Redirige al usuario a PayPal
@@ -53,7 +63,7 @@ public function success(Request $request)
         $data = $response->getData();
 
         if ($response->isSuccessful()) {
-            // Accede a 'amount' en la primera transacción
+
             $amount = $data['transactions'][0]['amount'];
             $payerEmail = $data['payer']['payer_info']['email']; // Asume que el correo electrónico del pagador está disponible aquí
 
@@ -61,7 +71,7 @@ public function success(Request $request)
             $payment = new Payment();
             $payment->payment_id = $transactionId;
             $payment->payer_id = $payerId;
-            $payment->payer_email = $payerEmail; // Agrega esta línea
+            $payment->payer_email = $payerEmail;
             $payment->amount = $amount['total'];
             $payment->currency = $amount['currency'];
             $payment->payment_status = 'completed'; // Asumiendo que el estado de pago es 'completed'

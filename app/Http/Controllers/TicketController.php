@@ -34,48 +34,74 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
+        /*
+        date_default_timezone_set('Europe/Madrid');
+        $nueve = date("09:00:00");
+        $tres = date("15:00:00");
+        $cinco = date("17:30:00");
+        $diez = date("23:59:59");
+        $ahora = date("H:i:s");
+        if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
+            return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
+        }
+            */
+        $guardar = [];
         $ticket = new Ticket();
         $ticket->fecha = date("Y-m-d");
         $ticket->total = $request->total;
         $ticket->hora = $request->hora;
         $ticket->user_id = Auth::user()->id;
-        $ticket->save();
+        array_push($guardar, $ticket);
 
         foreach (Cart::content() as $producto){
             $extras = count($producto->options->extra);
             $ingredientes = count($producto->options->ings);
             $nExtras = "";
             $nIng = "";
-            //que no se pueda comprar si hay menos de 0
+
             $t = new Detalles_ticket();
             $t->cantidad = $producto->qty;
-            $t->ticket_id = $ticket->id;
+
             $t->bocadillo_id = $producto->name->id;
 
             for ($i = 0; $i < $extras; $i++){
                 $extra = Ingredientes_extra::buscarId($producto->options->extra[$i]);
+                if((double) $producto->qty > $extra->cantidad*$producto->qty){
+                    return back()->with('status', 'No hay suficiente cantidad de '.$extra->nombre);
+                }
                 $extra->cantidad -= $producto->qty;
                 $nExtras = $nExtras.(string)$extra->id.'-';
-                $extra->save();
+                array_push($guardar, $extra);
             }
             $nExtras = substr($nExtras, 0, -1);
             $t->ingrediente_extra = $nExtras;
+            $desc = [];
             for ($i = 0; $i < $ingredientes; $i++){
-                $ing = Ingrediente::buscarId($producto->options->ings[$i]);
-                $tmp = Elaboracion::buscarPorIngrediente($ing->id);
-                $tmp[0]->cantidad +=1;
-                $tmp[0]->save();
-                $nIng = $nIng.(string)$ing->id.'-';
+                $ingre = Ingrediente::buscarId($producto->options->ings[$i]);
+                $ing = Ingrediente::find($ingre);
+                array_push($desc, $ing[0]->id);
+                $nIng = $nIng.(string)$ing[0]->id.'-';
             }
             $nIng = substr($nIng, 0, -1);
             $t->descartados = $nIng;
+
             $bc = Elaboracion::buscarId($producto->name->id);
             foreach ($bc as $b){
                 $in = Ingrediente::find($b->ingrediente_id);
+                if(in_array($in->id, $desc)){
+                    continue;
+                }
                 $cantidad = $b->cantidad*$producto->qty;
+                if($cantidad > $in->cantidad){
+                    return back()->with('status', 'No hay suficiente cantidad de '.$in->nombre);
+                }
                 $in->cantidad -= $cantidad;
-                $in->save();
+                array_push($guardar, $in);
             }
+            foreach($guardar as $g){
+                $g->save();
+            }
+            $t->ticket_id = $ticket->id;
             $t->save();
         }
         return redirect()->route('carrito.clear');

@@ -12,32 +12,29 @@
         </div>
         <form action="{{ route('tickets.store') }}" method="post">
             @csrf
+            <div class="row">
             <div class="col-md-6">
                <input type="submit" value="Pagar" class="btn btn-primary btn-sm">
             </div>
-            <input type="hidden" name="total" value="{{Cart::subtotal()}}">
-            <label>Hora de recogida</label>
-            <select name="hora">
-                <option value="8">8:30</option>
-                <option value="9">9:25</option>
-                <option value="10">10:20</option>
-                <option value="11">11:10</option>
-                <option value="11.5">11:40</option>
-                <option value="12">12:35</option>
-                <option value="13">13:30</option>
-                <option value="14">14:20</option>
 
-                <option value="4">16:00</option>
-                <option value="5">16:55</option>
-                <option value="6">17:50</option>
-                <option value="6.5">18:40</option>
-                <option value="7">19:05</option>
-                <option value="8">20:00</option>
-                <option value="9">20:55</option>
-                <option value="10">21:45</option>
+            <div class="col-md-6">
+            <select name="hora">
+                <option value="11.10">11:10</option>
+                <option value="14.20">14:20</option>
+
+                <option value="18.40">18:40</option>
+                <option value="21.45">21:45</option>
             </select>
+            </div>
+        </div>
+        <input type="hidden" name="total" value="{{Cart::subtotal()}}">
         </form>
     </div>
+    @if (session('status'))
+                <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                    <p style="color: red">{{ session('status') }}</p>
+                </div>
+            @endif
 <table class="table">
     <thead>
         <tr>
@@ -78,12 +75,10 @@
     @endforeach
     </tbody>
 </table>
-
 <form action="{{ route('payment.pay') }}" method="post">
     @csrf
     <input type="hidden" name="amount" value="{{ $total }}">
     <button type="submit">Pagar</button>
 </form>
-
 </div>
 @endsection

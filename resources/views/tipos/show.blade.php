@@ -42,6 +42,11 @@
                                         <input type="number" name="cantidad" min="1" step="1">
                                         <input type="hidden" id="bocadillo" name="tipo" value="{{ $tipo->id }}"><br>
                                         <input type="submit" class="btn btn-primary" value="Añadir producto">
+                                        @if (session('status'))
+                                        <div class="bg-orange-100 border-l-4 border-orange-500 text-orange-700 p-4" role="alert">
+                                            <p style="color: red">{{ session('status') }}</p>
+                                        </div>
+                                        @endif
                                     </form>
                                     @elseif(Auth::user()->hasRole('administrador'))
                                         </form>
