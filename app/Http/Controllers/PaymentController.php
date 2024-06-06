@@ -6,6 +6,12 @@ use App\Models\Payment;
 use Illuminate\Http\Request;
 use Omnipay\Omnipay;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TicketController;
+use App\Models\Ingredientes_extra;
+use App\Models\Elaboracion;
+use App\Models\Ingrediente;
+use Gloudemans\Shoppingcart\Facades\Cart;
+
 
 class PaymentController extends Controller
 {
@@ -23,20 +29,44 @@ class PaymentController extends Controller
     public function pay(Request $request)
 {
     try {
+        // Verifica el stock antes de pagar
+        $items = Cart::content();
 
-        $cart = new CartController();
-        $total = $cart->getTotal();
+        foreach ($items as $item) {
+            $extrasArray = explode(", ", $item->options->extras);
+            foreach ($extrasArray as $extraName) {
+                $extra = Ingredientes_extra::where('nombre', $extraName)->first();
+                if ($extra) {
+                    if ($extra->cantidad < $item->qty) {
+                        return redirect()->back()->with('error', 'No hay suficiente stock de ' . $extraName);
+                    }
+                } else {
+                    // Maneja el caso en que el extra no se encuentra
+                }
+            }
+
+            $elaboraciones = Elaboracion::where('bocadillo_id', $item->id)->get();
+            foreach ($elaboraciones as $elaboracion) {
+                $ingrediente = Ingrediente::find($elaboracion->ingrediente_id);
+                if ($ingrediente) {
+                    if ($ingrediente->cantidad < $item->qty) {
+                        return redirect()->back()->with('error', 'No hay suficiente stock del ingrediente: ' . $ingrediente->nombre);
+                    }
+                } else {
+                    // Maneja el caso en que el ingrediente no se encuentra
+                }
+            }
+        }
+
+        // Si hay suficiente stock, procede con la compra
+        $total = Cart::subtotal();
 
         $response = $this->gateway->purchase([
             'amount' => $total,
             'currency' => env('PAYPAL_CURRENCY'),
             'returnUrl' => route('payment.success'),
             'cancelUrl' => route('payment.cancel'),
-
-
         ])->send();
-
-
 
         if ($response->isRedirect()) {
             // Redirige al usuario a PayPal
@@ -49,39 +79,51 @@ class PaymentController extends Controller
     }
 }
 
-public function success(Request $request)
-{
-    $transactionId = $request->get('paymentId');
-    $payerId = $request->get('PayerID');
+    public function success(Request $request)
+    {
+        $transactionId = $request->get('paymentId');
+        $payerId = $request->get('PayerID');
 
-    if ($transactionId && $payerId) {
-        $response = $this->gateway->completePurchase([
-            'transactionReference' => $transactionId,
-            'payerId' => $payerId,
-        ])->send();
+        if ($transactionId && $payerId) {
+            $response = $this->gateway->completePurchase([
+                'transactionReference' => $transactionId,
+                'payerId' => $payerId,
+            ])->send();
 
-        $data = $response->getData();
+            $data = $response->getData();
 
-        if ($response->isSuccessful()) {
+            if ($response->isSuccessful()) {
 
-            $amount = $data['transactions'][0]['amount'];
-            $payerEmail = $data['payer']['payer_info']['email']; // Asume que el correo electrónico del pagador está disponible aquí
+                $amount = $data['transactions'][0]['amount'];
+                $payerEmail = $data['payer']['payer_info']['email']; // Asume que el correo electrónico del pagador está disponible aquí
 
-            // Guarda los datos en la base de datos
-            $payment = new Payment();
-            $payment->payment_id = $transactionId;
-            $payment->payer_id = $payerId;
-            $payment->payer_email = $payerEmail;
-            $payment->amount = $amount['total'];
-            $payment->currency = $amount['currency'];
-            $payment->payment_status = 'completed'; // Asumiendo que el estado de pago es 'completed'
-            $payment->save();
+                // Guarda los datos en la base de datos
+                $payment = new Payment();
+                $payment->payment_id = $transactionId;
+                $payment->payer_id = $payerId;
+                $payment->payer_email = $payerEmail;
+                $payment->amount = $amount['total'];
+                $payment->currency = $amount['currency'];
+                $payment->payment_status = 'completed'; // Asumiendo que el estado de pago es 'completed'
+                $payment->save();
+            }
+            $request->merge([
+                'date' => now(),
+                'total' => $amount['total'],
+                'hora' => now()->format('H:i:s'),
+                'user_id' => auth()->id(),
+            ]);
+
+
+            $ticketController = new TicketController();
+            $ticketController->store($request);
         }
+
+        // Redirige al usuario a la página de inicio
+        return redirect()->route('home');
     }
 
-    // Redirige al usuario a la página de inicio
-    return redirect('/');
-}
+
 
     public function cancel()
     {

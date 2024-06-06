@@ -4,6 +4,11 @@
 
 @section('content')
 <div class="container">
+    @if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
     <h2 class="mt-4">Carrito de la compra</h2>
     <h2>Total: {{Cart::subtotal()}} €</h2>
     <div class="row">

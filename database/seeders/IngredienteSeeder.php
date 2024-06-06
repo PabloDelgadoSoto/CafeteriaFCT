@@ -38,7 +38,7 @@ class IngredienteSeeder extends Seeder
             ],
             [
                 'nombre' => 'Lomo',
-                'cantidad' => 0,
+                'cantidad' => 10,
             ],
             [
                 'nombre' => 'Tortilla',

@@ -35,75 +35,73 @@ class TicketController extends Controller
     public function store(Request $request)
     {
         /*
-        date_default_timezone_set('Europe/Madrid');
-        $nueve = date("09:00:00");
-        $tres = date("15:00:00");
-        $cinco = date("17:30:00");
-        $diez = date("23:59:59");
-        $ahora = date("H:i:s");
-        if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
-            return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
-        }
-            */
+    date_default_timezone_set('Europe/Madrid');
+    $nueve = date("09:00:00");
+    $tres = date("15:00:00");
+    $cinco = date("17:30:00");
+    $diez = date("23:59:59");
+    $ahora = date("H:i:s");
+    if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
+        return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
+    }
+    */
+        $hora = strtotime($request->hora);
         $guardar = [];
         $ticket = new Ticket();
         $ticket->fecha = date("Y-m-d");
         $ticket->total = $request->total;
-        $ticket->hora = $request->hora;
-        $ticket->user_id = Auth::user()->id;
+        $ticket->hora = $hora;
+        $ticket->user_id = $request->user_id;
+        $ticket->save(); // Guarda el ticket en la base de datos
         array_push($guardar, $ticket);
 
-        foreach (Cart::content() as $producto){
+        foreach (Cart::content() as $producto) {
             $extras = count($producto->options->extra);
             $ingredientes = count($producto->options->ings);
             $nExtras = "";
+
             $nIng = "";
 
             $t = new Detalles_ticket();
             $t->cantidad = $producto->qty;
-
             $t->bocadillo_id = $producto->name->id;
-
-            for ($i = 0; $i < $extras; $i++){
-                $extra = Ingredientes_extra::buscarId($producto->options->extra[$i]);
-                if((double) $producto->qty > $extra->cantidad*$producto->qty){
-                    return back()->with('status', 'No hay suficiente cantidad de '.$extra->nombre);
-                }
-                $extra->cantidad -= $producto->qty;
-                $nExtras = $nExtras.(string)$extra->id.'-';
-                array_push($guardar, $extra);
-            }
-            $nExtras = substr($nExtras, 0, -1);
-            $t->ingrediente_extra = $nExtras;
-            $desc = [];
-            for ($i = 0; $i < $ingredientes; $i++){
-                $ingre = Ingrediente::buscarId($producto->options->ings[$i]);
-                $ing = Ingrediente::find($ingre);
-                array_push($desc, $ing[0]->id);
-                $nIng = $nIng.(string)$ing[0]->id.'-';
-            }
-            $nIng = substr($nIng, 0, -1);
-            $t->descartados = $nIng;
-
-            $bc = Elaboracion::buscarId($producto->name->id);
-            foreach ($bc as $b){
-                $in = Ingrediente::find($b->ingrediente_id);
-                if(in_array($in->id, $desc)){
-                    continue;
-                }
-                $cantidad = $b->cantidad*$producto->qty;
-                if($cantidad > $in->cantidad){
-                    return back()->with('status', 'No hay suficiente cantidad de '.$in->nombre);
-                }
-                $in->cantidad -= $cantidad;
-                array_push($guardar, $in);
-            }
-            foreach($guardar as $g){
-                $g->save();
-            }
             $t->ticket_id = $ticket->id;
+
+            // Agrega los extras al objeto Detalles_ticket
+            $t->ingrediente_extra = implode(", ", $producto->options->extra);
+
+            // Guarda el Detalles_ticket en la base de datos
             $t->save();
+
+            // Actualiza la cantidad de cada extra
+            $extrasArray = explode(", ", $t->ingrediente_extra);
+            foreach ($extrasArray as $extraName) {
+                $extra = Ingredientes_extra::where('nombre', $extraName)->first();
+                if ($extra) {
+                    $extra->cantidad -= $producto->qty;
+                    $extra->save();
+                } else {
+                    // Maneja el caso en que el extra no se encuentra
+                }
+            }
+
+            // Obtiene los ingredientes del bocadillo a través de la tabla de elaboraciones
+            $elaboraciones = Elaboracion::where('bocadillo_id', $producto->name->id)->get();
+
+            // Actualiza la cantidad de cada ingrediente
+            foreach ($elaboraciones as $elaboracion) {
+                $ingrediente = Ingrediente::find($elaboracion->ingrediente_id);
+                if ($ingrediente) {
+                    $ingrediente->cantidad -= $producto->qty;
+                    $ingrediente->save();
+                } else {
+                    // Maneja el caso en que el ingrediente no se encuentra
+                }
+            }
         }
+
+        // Vacía el carrito
+        Cart::destroy();
         return redirect()->route('carrito.clear');
     }
 
