@@ -14,7 +14,7 @@
 
         <!-- Nia -->
         <div>
-            <x-input-label for="nia" :value="__('nia')" />
+            <x-input-label for="nia" :value="__('Nia')" />
             <x-text-input id="nia" class="block mt-1 w-full" type="text" name="nia" :value="old('nia')" required autofocus autocomplete="nia" />
             <x-input-error :messages="$errors->get('nia')" class="mt-2" />
         </div>

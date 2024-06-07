@@ -5,3 +5,20 @@
   body {
     background-color: #f2f2f2 !important;
   }
+
+  .login-register {
+    width: 80%;
+    margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+    .login-register {
+        width: 60%;
+    }
+}
+
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}

@@ -3,55 +3,50 @@
 @section('title', 'Login')
 
 @section('content')
-    <div class="container" style="padding-top:10%;text-align: center; display:flex; justify-content:center;">
-        <div class="row">
-        <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12" style="padding: 10px">
-            <div class="card" style="width: 18rem;">
-    <div class="card-body">
-        <div class="extras" aria-multiselectable="true">
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+<h1>Login</h1>
+<div class="login-container">
+    <div class="login-register">
+        <ul class="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="tab-login" data-mdb-toggle="pill" href="#pills-login" role="tab"
+                    aria-controls="pills-login" aria-selected="true">Login</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="tab-register" data-mdb-toggle="pill" href="#pills-register" role="tab"
+                    aria-controls="pills-register" aria-selected="false">Register</a>
+            </li>
+        </ul>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="tab-content">
+
+            <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+                @component('auth._components.login')
+                @endcomponent
+                @if ($error = $errors->first('password'))
+                <div class="alert alert-danger">
+                    {{ $error }}
+                </div>
+                @endif
+            </div>
+
+            <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+                @component('auth._components.register')
+                @endcomponent
+            </div>
         </div>
+    </div>
+</div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="btn btn-primary">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</div>
-</div>
-</div><a href="{{route('register')}}">Registrarse</a>
-</div>
-</div>
-</div>
-</div>
+<script src="{{ asset('assets/js/login.js') }}"></script>
 
 @endsection
