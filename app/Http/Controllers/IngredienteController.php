@@ -53,10 +53,7 @@ class IngredienteController extends Controller
 
         $bocadillos = Tipo::all();
 
-        // Verifica la disponibilidad de cada bocadillo
-        foreach ($bocadillos as $bocadillo) {
-            $bocadillo->verificarDisponibilidad();
-        }
+
         return redirect()->route("ingredientes.editall");
     }
 
@@ -84,13 +81,6 @@ class IngredienteController extends Controller
                 $ingrediente->cantidad = $cantidad;
                 $ingrediente->save();
             }
-        }
-
-        $bocadillos = Tipo::all();
-
-        // Verifica la disponibilidad de cada bocadillo
-        foreach ($bocadillos as $bocadillo) {
-            $bocadillo->verificarDisponibilidad();
         }
 
         // Redirige al usuario a la página anterior con un mensaje de éxito

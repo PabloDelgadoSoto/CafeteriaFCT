@@ -31,6 +31,17 @@ class PaymentController extends Controller
     try {
         session(['hora' => $request->hora]);
         // Verifica el stock antes de pagar
+        //de aqui comentar
+        date_default_timezone_set('Europe/Madrid');
+        $nueve = date("09:00:00");
+        $tres = date("15:00:00");
+        $cinco = date("17:30:00");
+        $diez = date("23:59:59");
+        $ahora = date("H:i:s");
+        if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
+            return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
+        }
+        //hasta aqui
         $items = Cart::content();
         foreach ($items as $item) {
             $extrasArray = explode(", ", $item->options->extras);

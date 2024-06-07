@@ -18,8 +18,8 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
-        /*
-        date_default_timezone_set('Europe/Madrid');
+        //de aqui comentar
+        date_default_timezone_set('Europe/Madrid');/*
         $nueve = date("09:00:00");
         $tres = date("15:00:00");
         $cinco = date("17:30:00");
@@ -27,8 +27,8 @@ class CartController extends Controller
         $ahora = date("H:i:s");
         if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
             return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
-        }
-            */
+        }*/
+        //hasta aqui
         $datos = $request->all();
         $ing = [];
         foreach ($datos as $clave => $valor) {
@@ -83,24 +83,33 @@ class CartController extends Controller
             array_push($todo, $e->ingrediente_id);
             array_push($cantidades, $e->cantidad);
         }
-
-        if($bocadillo->desmontable){
-            for($i = 0; $i < count($todo); $i++){
-                $p = Ingrediente::find($todo[$i]);
+        $cuenta = count($quitar);
+        for($i = 0; $i < count($todo); $i++){
+            $p = Ingrediente::find($todo[$i]);
+            if($cuenta != 0){
+                if(in_array($todo[$i], $quitar)){
+                    if($cantidades[$i]*$qty > $p->cantidad){
+                        return back()->with('status', 'No hay suficiente cantidad de '.$p->nombre);
+                    }
+                } else {
+                    array_push($ingredientes, $p->nombre);
+                }
+            }else {
                 if(!in_array($todo[$i], $quitar)){
                     array_push($ingredientes, $p->nombre);
-                    if($cantidades[$i] > $p->cantidad){
+                    if($cantidades[$i]*$qty > $p->cantidad){
                         return back()->with('status', 'No hay suficiente cantidad de '.$p->nombre);
                     }
                 }
             }
+
         }
 
         $nombres = [];
         foreach($extras as $e){
             $p = Ingredientes_extra::find($e);
             if($qty > $p->cantidad){
-                return back()->with('status', 'No hay suficiente cantidad de '.$p->nombre);
+                return back()->with('error', 'No hay suficiente cantidad de '.$p->nombre);
             }
             $precioTotal += $p->coste_extra;
             array_push($nombres, $p->nombre);
