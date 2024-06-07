@@ -22,3 +22,41 @@
     display: flex;
     justify-content: center;
 }
+
+.carrito  {
+    width: 50px;
+    height:50px;
+}
+
+@media (max-width: 600px) {
+    .carrito {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .navbar {
+        height: 50px;
+        width: 100%;
+        padding: 0; /* Añade esta línea */
+        margin: 0; /* Añade esta línea */
+        box-sizing: border-box; /* Añade esta línea */
+    }
+    .navbar-collapse {
+        width: 100%;
+        background-color: #343a40; /* Color de fondo para .navbar-dark en Bootstrap */
+    }
+
+    .navbar-collapse .nav-item {
+        margin: 10px; /* Ajusta este valor según tus necesidades */
+    }
+}
+
+
+
+@media (max-width: 600px) {
+
+}
+
+

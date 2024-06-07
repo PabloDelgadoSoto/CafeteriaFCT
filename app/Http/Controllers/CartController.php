@@ -126,7 +126,6 @@ class CartController extends Controller
         ]);
 
         return Redirect::back()->with('success', 'Bocadillo añadido al carrito correctamente.');
-
     }
 
     public function checkout()
