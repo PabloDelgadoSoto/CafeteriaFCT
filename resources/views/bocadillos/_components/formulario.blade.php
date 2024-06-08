@@ -26,7 +26,7 @@
         </div>
         <div class="form-group">
         <label>Precio</label><br>
-        <input type="number" name="precio" class="form-control" value="{{old('precio', $bocadillo->precio ?? '')}}" required ><br>
+        <input type="number" name="precio" class="form-control" value="{{old('precio', $bocadillo->precio ?? '')}}" step="0.01" required ><br>
         </div>
         <div class="form-group">
             <label for="desmontable">Desmontable</label><br>

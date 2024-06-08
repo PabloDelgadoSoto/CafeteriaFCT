@@ -28,7 +28,7 @@
         <label for="Cantidad">Cantidad</label>
         <input type="number" name="cantidad" class="form-control" value="{{old('coste_extra', $extra->cantidad ?? '')}}" required>
         <label for="Coste_extra">Coste extra</label>
-        <input type="number" step=".01" name="coste_extra" class="form-control" value="{{old('coste_extra', $extra->coste_extra ?? '')}}" required>
+        <input type="number" step="0.01" name="coste_extra" class="form-control" value="{{old('coste_extra', $extra->coste_extra ?? '')}}" required>
         </div>
         <input type="submit" class="btn btn-primary" value="Guardar cambios">
     </form>

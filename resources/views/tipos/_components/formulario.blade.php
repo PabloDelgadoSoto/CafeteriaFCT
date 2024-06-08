@@ -1,14 +1,14 @@
 @php
-    use App\Models\Bocadillo;
+    use App\Models\Tipo;
 
     $modoCreacion = true;
-    if (isset($bocadillo->nombre)) {
+    if (isset($tipo->nombre)) {
         $modoCreacion = false;
     }
 
     $rutaAction = route('tipos.store');
     if(!$modoCreacion){
-        $rutaAction = route('tipos.update', $bocadillo);
+        $rutaAction = route('tipos.update', $tipo);
     }
 @endphp
 
@@ -22,15 +22,15 @@
         @endif
         <div class="form-group">
         <label for="nombre">Nombre</label><br>
-        <input type="text" name="nombre" class="form-control" value="{{old('nombre', $bocadillo->nombre ?? '')}}" required>
+        <input type="text" name="nombre" class="form-control" value="{{old('nombre', $tipo->nombre ?? '')}}" required>
         </div>
         <div class="form-group">
         <label for="descripcion">Descripción</label><br>
-        <textarea name="descripcion" class="form-control" required>{{old('descripcion', $bocadillo->descripcion ?? '')}}</textarea><br>
+        <textarea name="descripcion" class="form-control" required>{{old('descripcion', $tipo->descripcion ?? '')}}</textarea><br>
         </div>
         <div class="form-group">
         <label for="imagen">Imagen</label>
-        <input type="file" name="imagen" class="form-control-file" value="{{old('imagen', $bocadillo->imagen ?? '')}}">
+        <input type="file" name="imagen" class="form-control-file" value="{{old('imagen', $tipo->imagen ?? '')}}">
         </div>
         <div class="form-group">
             <label for="extras">Tiene extras</label><br>

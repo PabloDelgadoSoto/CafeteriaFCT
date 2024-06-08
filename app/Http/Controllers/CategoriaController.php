@@ -29,8 +29,11 @@ class CategoriaController extends Controller
 
     //Ver los productos de una categoria
     public function show(Categoria $categoria){
+
+
         $tipos = Tipo::all()->where('categoria_id', $categoria->id);
-        return view("home", compact('tipos'));
+
+        return view('categorias.show', compact('tipos', 'categoria'));
     }
 
     //Ir al formulario de editar una categoria

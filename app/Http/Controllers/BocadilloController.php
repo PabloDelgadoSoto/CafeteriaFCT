@@ -103,9 +103,14 @@ class BocadilloController extends Controller
     public function destroy(Bocadillo $bocadillo){
         //Guardar el nombre para mostrarlo luego en el mensaje
         $n = $bocadillo->nombre;
-        unlink(storage_path('app/public/img/bocadillos/'.$bocadillo->imagen));
+        $imagePath = storage_path('app/public/img/bocadillos/'.$bocadillo->imagen);
+
+        if (file_exists($imagePath)) {
+            unlink($imagePath);
+        }
+
         $bocadillo->delete();
-        return redirect()->route("bocadillos.index")->with('status', 'Bocadillo '.$n.' eliminado con éxito');
+        return redirect()->route("bocadillos.listado")->with('status', 'Bocadillo '.$n.' eliminado con éxito');
     }
 
     // Listar todos los bocadillos

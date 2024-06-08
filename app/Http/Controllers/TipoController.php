@@ -28,9 +28,7 @@ class TipoController extends Controller
 
     //Crear bocadillo nuevo
     public function store(Request $request){
-        $imagen = $request->file('imagen');
-        $nombreImagen = time().'_'.$imagen->getClientOriginalName();
-        $imagen->move(public_path('assets'), $nombreImagen);
+
 
         $tipo = new Tipo();
         $tipo->nombre = $request->nombre;
@@ -41,7 +39,18 @@ class TipoController extends Controller
         } else {
             $tipo->extras = 0;
         }
-        $tipo->imagen = $nombreImagen;
+        if(isset($request->imagen)){
+            //borra la imagen
+            unlink(storage_path('app/public/img/'.$tipo->imagen));
+            $imagen = $request->file('imagen');
+            $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
+            $imagen->move(public_path('assets'), $nombreImagen);
+            $tipo->imagen = $nombreImagen;
+        }
+        else{
+            $tipo->imagen = $tipo->nombre . '.png';
+        }
+
         $tipo->save();
         return redirect()->route('tipos.index');//formulario de ingredientes para que despues de crearlo introduzca lo que se necesita
     }
@@ -76,6 +85,9 @@ class TipoController extends Controller
             $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
             $imagen->move(public_path('assets'), $nombreImagen);
             $tipo->imagen = $nombreImagen;
+        }
+        else{
+            $tipo->imagen = $tipo->nombre . '.png';
         }
         $tipo->save();
 

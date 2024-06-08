@@ -29,7 +29,7 @@ class IngredienteController extends Controller
         $ingrediente->nombre = $request->nombre;
         $ingrediente->cantidad = $request->cantidad;
         $ingrediente->save();
-        return redirect()->route("ingredientes.index");
+        return redirect()->route("ingredientes.editall");
     }
 
     //Ver los detalles de un ingrediente

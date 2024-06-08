@@ -15,27 +15,24 @@ class Ingrediente_ExtraController extends Controller
     }
 
     public function updateAll(Request $request)
-    {
+{
+    $datos = $request->all();
 
-        $datos = $request->all();
+    foreach ($datos as $id => $data) {
+        // Convierte $id a un número entero
+        $id = (int) $id;
 
+        $extras = Ingredientes_extra::find($id);
 
-        foreach ($datos as $id => $cantidad) {
-            // Convierte $id a un número entero
-            $id = (int) $id;
-
-            $extras = Ingredientes_extra::find($id);
-
-            if ($extras) {
-                $extras->cantidad = $cantidad;
-                $extras->save();
-            }
+        if ($extras) {
+            $extras->cantidad = $data['cantidad'];
+            $extras->coste_extra = $data['coste_extra']; // actualiza el coste extra
+            $extras->save();
         }
-
-
-        // Redirige al usuario a la página anterior con un mensaje de éxito
-        return redirect()->back()->with('success', 'Las cantidades de todos los ingredientes han sido actualizadas.');
     }
+
+    // Redirige al usuario a la página anterior con un mensaje de éxito
+}
 
     //Ir al formulario de creacion
     public function create(){
@@ -49,7 +46,7 @@ class Ingrediente_ExtraController extends Controller
         $extra->coste_extra = $request->coste_extra;
         $extra->cantidad = $request->cantidad;
         $extra->save();
-        return redirect()->route("extras.show", $extra);
+        return redirect()->route("extras.edit", $extra);
 
     }
 
