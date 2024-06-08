@@ -10,6 +10,8 @@ use Gloudemans\Shoppingcart\Facades\Cart;
 use App\Models\Ingredientes_extra;
 use App\Models\Elaboracion;
 use App\Models\Ingrediente;
+use App\Http\Controllers\UserController;
+
 
 class TicketController extends Controller
 {
@@ -100,6 +102,9 @@ class TicketController extends Controller
         }
 
         // Vacía el carrito
+        $userController = new UserController();
+        $userController->createData();
+
         Cart::destroy();
         return redirect()->route('carrito.clear');
     }

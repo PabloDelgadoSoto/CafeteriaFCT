@@ -76,13 +76,9 @@ class BocadilloController extends Controller
     public function update(Request $request, Bocadillo $bocadillo){
         $bocadillo->nombre = $request->nombre;
         $bocadillo->precio = $request->precio;
-        $bocadillo->descripcion = $request->descripcion;
-        $bocadillo->categoria_id = $request->tipo_id;
-        if(isset($request->prod)){
-            $bocadillo->prod = 1;
-        } else {
-            $bocadillo->prod = 0;
-        }
+
+
+
         if(isset($request->desmontable)){
             $bocadillo->desmontable = 1;
         } else {

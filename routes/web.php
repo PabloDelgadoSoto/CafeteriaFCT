@@ -30,7 +30,12 @@ use App\Models\Payment;
 */
 
 Route::get('/', HomeController::class)->name('home');
-
+// Rutas de botones ver pedidods, completar pedidos y eliminar pedidos
+Route::post('/completarPedido/{id}', [UserController::class, 'completar'])->name('completarPedido');
+Route::post('/completarTodos', [UserController::class, 'completarTodos'])->name('completarTodos');
+Route::delete('/pedido/eliminar/{id}', [UserController::class, 'eliminarPedido'])->name('pedido.eliminar');
+Route::delete('/pedido/eliminarTodos', [UserController::class, 'eliminarTodosPedidos'])->name('pedido.eliminarTodos');
+//Rutas paypal
 Route::post('pay' , [PaymentController::class, 'pay'])->name('payment.pay');
 Route::get('payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
