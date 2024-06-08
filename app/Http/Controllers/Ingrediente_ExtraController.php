@@ -18,20 +18,33 @@ class Ingrediente_ExtraController extends Controller
 {
     $datos = $request->all();
 
-    foreach ($datos as $id => $data) {
+    foreach ($datos as $key => $value) {
+        // Ignora los campos _token y _method
+        if ($key == '_token' || $key == '_method') {
+            continue;
+        }
+
+        // Divide la clave en el prefijo y el ID
+        list($prefix, $id) = explode('_', $key);
+
         // Convierte $id a un número entero
         $id = (int) $id;
 
-        $extras = Ingredientes_extra::find($id);
+        $extra = Ingredientes_extra::find($id);
 
-        if ($extras) {
-            $extras->cantidad = $data['cantidad'];
-            $extras->coste_extra = $data['coste_extra']; // actualiza el coste extra
-            $extras->save();
+        if ($extra) {
+            if ($prefix == 'coste') {
+                $extra->coste_extra = $value;
+            } elseif ($prefix == 'cantidad') {
+                $extra->cantidad = $value;
+            }
+
+            $extra->save();
         }
     }
 
     // Redirige al usuario a la página anterior con un mensaje de éxito
+    return redirect()->back()->with('success', 'Las cantidades y costes de todos los ingredientes han sido actualizadas.');
 }
 
     //Ir al formulario de creacion
