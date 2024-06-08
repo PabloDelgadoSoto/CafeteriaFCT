@@ -2,7 +2,7 @@
     use App\Models\Elaboracion;
 
     $modoCreacion = true;
-    if (isset($elaboracion->nombre)) {
+    if (isset($elaboracion)) {
         $modoCreacion = false;
     }
 
@@ -24,13 +24,13 @@
         <label>Producto</label><br>
         <select class="form-control" name="bocadillo_id" required>
             @foreach($productos as $b)
-                <option value={{$b->id}} {{ (old('bocadillo_id', $bocadillo->tipo_id ?? '') == $b->id) ? 'selected' : '' }}>{{$b->nombre}}</option>
+                <option value={{$b->id}} {{ (old('bocadillo_id', $elaboracion->bocadillo_id ?? '') == $b->id) ? 'selected' : '' }}>{{$b->nombre}}</option>
             @endforeach
         </select>
         <label>Ingrediente</label><br>
         <select class="form-control" name="ingrediente_id" required>
             @foreach($ingredientes as $i)
-                <option value={{$i->id}} {{ (old('ingrediente_id', $bocadillo->tipo_id ?? '') == $i->id) ? 'selected' : '' }}>{{$i->nombre}}</option>
+                <option value={{$i->id}} {{ (old('ingrediente_id', $elaboracion->ingrediente_id ?? '') == $i->id) ? 'selected' : '' }}>{{$i->nombre}}</option>
             @endforeach
         </select>
         <label>Cantidad</label><br>

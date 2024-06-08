@@ -65,7 +65,7 @@ class ElaboracionController extends Controller
      */
     public function edit(Elaboracion $elaboracion)
     {
-        $productos = Tipo::all();
+        $productos = Bocadillo::all();
         $ingredientes = Ingrediente::all();
         return view('elaboraciones.edit', compact('productos', 'ingredientes', 'elaboracion'));
     }
