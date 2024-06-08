@@ -102,9 +102,10 @@ class CartController extends Controller
                     }
                 }
             }
-
         }
-
+        if(!$bocadillo->desmontable){
+            $ingredientes = array();
+        }
         $nombres = [];
         foreach($extras as $e){
             $p = Ingredientes_extra::find($e);
@@ -126,6 +127,7 @@ class CartController extends Controller
         ]);
 
         return Redirect::back()->with('success', 'Bocadillo añadido al carrito correctamente.');
+
     }
 
     public function checkout()

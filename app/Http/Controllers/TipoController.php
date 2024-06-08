@@ -30,21 +30,20 @@ class TipoController extends Controller
     public function store(Request $request){
         $imagen = $request->file('imagen');
         $nombreImagen = time().'_'.$imagen->getClientOriginalName();
-        $imagen->move(storage_path('app/public/img'), $nombreImagen);
+        $imagen->move(public_path('assets'), $nombreImagen);
 
         $tipo = new Tipo();
         $tipo->nombre = $request->nombre;
         $tipo->descripcion = $request->descripcion;
         $tipo->categoria_id = $request->categoria_id;
         if(isset($request->extra)){
-            $tipo->extra = 1;
+            $tipo->extras = 1;
         } else {
-            $tipo->extra = 0;
+            $tipo->extras = 0;
         }
         $tipo->imagen = $nombreImagen;
         $tipo->save();
-        //de momento manda al index para que no se rompa
-        return redirect()->route('tipos.listado');//formulario de ingredientes para que despues de crearlo introduzca lo que se necesita
+        return redirect()->route('tipos.index');//formulario de ingredientes para que despues de crearlo introduzca lo que se necesita
     }
 
     //Mostrar un bocadillo en detalle
@@ -66,21 +65,21 @@ class TipoController extends Controller
         $tipo->descripcion = $request->descripcion;
         $tipo->categoria_id = $request->categoria_id;
         if(isset($request->extra)){
-            $tipo->extra = 1;
+            $tipo->extras = 1;
         } else {
-            $tipo->extra = 0;
+            $tipo->extras = 0;
         }
         if(isset($request->imagen)){
             //borra la imagen
             unlink(storage_path('app/public/img/'.$tipo->imagen));
             $imagen = $request->file('imagen');
             $nombreImagen = time() . '_' . $imagen->getClientOriginalName();
-            $imagen->move(storage_path('app/public/img'), $nombreImagen);
+            $imagen->move(public_path('assets'), $nombreImagen);
             $tipo->imagen = $nombreImagen;
         }
         $tipo->save();
 
-        return redirect()->route('tipos.listado');//formulario de ingredientes para que despues de crearlo introduzca lo que se necesita
+        return redirect()->route('tipos.index');//formulario de ingredientes para que despues de crearlo introduzca lo que se necesita
     }
 
     //Borrar un bocadillo

@@ -29,10 +29,9 @@ class PaymentController extends Controller
     public function pay(Request $request)
 {
     try {
-        session(['hora' => $request->hora]);
+        session(['hora' => $request->hora]);/*
         // Verifica el stock antes de pagar
         //de aqui comentar
-        /*
         date_default_timezone_set('Europe/Madrid');
         $nueve = date("09:00:00");
         $tres = date("15:00:00");
@@ -41,8 +40,7 @@ class PaymentController extends Controller
         $ahora = date("H:i:s");
         if(($ahora > $nueve && $ahora < $tres) || ($ahora > $cinco && $ahora < $diez)){
             return back()->with('status', 'En este momento no se permite comprar ningún producto, inténtalo más tarde.');
-        }
-        */
+        }*/
         //hasta aqui
         $items = Cart::content();
         foreach ($items as $item) {
@@ -60,13 +58,18 @@ class PaymentController extends Controller
 
             $elaboraciones = Elaboracion::where('bocadillo_id', $item->id)->get();
             foreach ($elaboraciones as $elaboracion) {
-                $ingrediente = Ingrediente::find($elaboracion->ingrediente_id);
-                if ($ingrediente) {
-                    if ($ingrediente->cantidad < $item->qty) {
-                        return redirect()->back()->with('error', 'No hay suficiente stock del ingrediente: ' . $ingrediente->nombre);
+            $ingrediente = Ingrediente::find($elaboracion->ingrediente_id);
+                foreach (Cart::content() as $producto){
+                    if (in_array($ingrediente->nombre, $producto->options->ings)){
+                        continue;
                     }
-                } else {
-                    // Maneja el caso en que el ingrediente no se encuentra
+                    if ($ingrediente) {
+                        if ($ingrediente->cantidad < $item->qty*$elaboracion->cantidad) {
+                            return redirect()->back()->with('error', 'No hay suficiente stock del ingrediente: ' . $ingrediente->nombre);
+                        }
+                    } else {
+                // Maneja el caso en que el ingrediente no se encuentra
+                    }
                 }
             }
         }

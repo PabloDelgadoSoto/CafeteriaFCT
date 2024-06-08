@@ -13,6 +13,7 @@ use App\Models\Ingrediente;
 use App\Http\Controllers\UserController;
 
 
+
 class TicketController extends Controller
 {
     /**
@@ -92,7 +93,7 @@ class TicketController extends Controller
                 if ($ingrediente) {
                     // Si el ingrediente no está en la lista de descartados, resta la cantidad
                     if (!in_array($ingrediente->nombre, $producto->options->ings)) {
-                        $ingrediente->cantidad -= $producto->qty;
+                        $ingrediente->cantidad -= $producto->qty*$elaboracion->cantidad;
                         $ingrediente->save();
                     }
                 } else {
@@ -100,11 +101,9 @@ class TicketController extends Controller
                 }
             }
         }
-
-        // Vacía el carrito
         $userController = new UserController();
         $userController->createData();
-
+        // Vacía el carrito
         Cart::destroy();
         return redirect()->route('carrito.clear');
     }

@@ -6,9 +6,9 @@
         $modoCreacion = false;
     }
 
-    $rutaAction = route('bocadillos.store');
+    $rutaAction = route('tipos.store');
     if(!$modoCreacion){
-        $rutaAction = route('bocadillos.update', $bocadillo);
+        $rutaAction = route('tipos.update', $bocadillo);
     }
 @endphp
 
