@@ -3,14 +3,14 @@
 @section('title', 'Ingredientes')
 
 @section('content')
-<div class="row">
+
 <a href="{{ route('ingredientes.create') }}" style="text-decoration: none; color: white;"><button type="button" class="btn btn-primary">Añadir ingrediente</button></a>
 <form action="{{ route('ingredientes.updateAll') }}" method="post">
     @csrf
 
     @method('put')
 <button type="submit" class="btn btn-primary">Actualizar cantidades</button>
-</div>
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -26,7 +26,7 @@
                         <td>{{ $ingrediente->id }}</td>
                         <td>{{ $ingrediente->nombre }}</td>
 
-                        <td><input type="number" id="ingrediente-{{ $ingrediente->id }}" name="{{ $ingrediente->id }}"
+                        <td><input type="number" step=".01" id="ingrediente-{{ $ingrediente->id }}" name="{{ $ingrediente->id }}"
                                 value="{{ $ingrediente->cantidad }}">
                         </td>
                         <td>

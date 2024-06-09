@@ -26,20 +26,25 @@
         </div>
         <div class="form-group">
         <label>Precio</label><br>
-        <input type="number" name="precio" class="form-control" value="{{old('precio', $bocadillo->precio ?? '')}}" step="0.01" required ><br>
+        <input type="number" name="precio" step=".01" class="form-control" value="{{old('precio', $bocadillo->precio ?? '')}}" required ><br>
         </div>
         <div class="form-group">
             <label for="desmontable">Desmontable</label><br>
             <input type="checkbox" name="desmontable" value="{{old('desmontable', $desmontable ?? '')}}" @if ($desmontable==1) checked @endif>
         </div>
         <div class="form-group">
-        <label for="categoria">Tipo</label>
+        <label for="tipo">Tipo</label>
         <select class="form-control" name="tipo_id" required>
             @foreach($tipos as $t)
                 <option value={{$t->id}} {{ (old('tipo_id', $bocadillo->tipo_id ?? '') == $t->id) ? 'selected' : '' }}>{{$t->nombre}}</option>
             @endforeach
         </select>
         </div>
+        <div class="form-group">
+            <label>Precio de descuento</label><br>
+            <p>Dejar vacío en caso de no tener descuento</p>
+            <input type="number" step=".01" name="descuento" class="form-control" value="{{old('descuento', $bocadillo->descuento ?? '')}}" required ><br>
+            </div>
         <input type="submit" class="btn btn-primary" value="Guardar cambios">
     </form>
     </div>

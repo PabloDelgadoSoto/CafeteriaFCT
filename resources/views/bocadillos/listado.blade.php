@@ -11,6 +11,9 @@
                 <th>ID</th>
                 <th>Nombre Bocadillo</th>
                 <th>Precio</th>
+                <th>Descuento</th>
+                <th>Desmontable</th>
+                <th>Tipo</th>
                 <th>Disponibilidad</th>
                 <th>Acciones</th>
             </tr>
@@ -21,6 +24,15 @@
                 <td>{{ $bocadillo->id }}</td>
                 <td>{{ $bocadillo->nombre }}</td>
                 <td>{{ $bocadillo->precio }}</td>
+                <td>{{ $bocadillo->descuento }}</td>
+                <td>
+                    @if ($bocadillo->desmontable == 0)
+                        No
+                    @elseif ($bocadillo->desmontable == 1)
+                        Si
+                    @endif
+                </td>
+                <td>{{ $tipos[$bocadillo->tipo_id]->nombre }}</td>
                 <td>
                     @if ($bocadillo->disponible == 0)
                         No disponible

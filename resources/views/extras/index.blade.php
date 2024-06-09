@@ -1,6 +1,6 @@
 @extends('layouts.plantilla')
 
-@section('title', 'Ingredientes')
+@section('title', 'Ingredientes extra')
 
 @section('content')
 
@@ -27,10 +27,10 @@
                     <tr>
                         <td>{{ $extra->id }}</td>
                         <td>{{ $extra->nombre }}</td>
-                        <td><input type="number" id="coste-{{ $extra->id }}" name="coste_{{ $extra->id }}"
-                                value="{{ $extra->coste_extra }}" step="0.01">
+                        <td><input type="number" step="0.01" id="coste-{{ $extra->id }}" name="coste_{{ $extra->id }}"
+                                value="{{ $extra->coste_extra }}">
                         </td>
-                        <td><input type="number" id="cantidad-{{ $extra->id }}" name="cantidad_{{ $extra->id }}"
+                        <td><input type="number" step="0.1" id="cantidad-{{ $extra->id }}" name="cantidad_{{ $extra->id }}"
                                 value="{{ $extra->cantidad }}">
                         </td>
                         <td>
