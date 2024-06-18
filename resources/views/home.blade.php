@@ -2,7 +2,6 @@
 @section('title', 'Home')
 @section('content')
 @foreach ($datos as $d)
-
     <div class="row m-5">
             @foreach ($d as $tipo)
 

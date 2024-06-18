@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <div class="card" style="width: 18rem;">
-                    <img src="{{ url('storage/img/' . $tipo->imagen) }}" style="padding:10px">
+                    <img src="{{asset('assets/'.$tipo->imagen)}}" style="padding:10px">
 
                     <div class="card-body">
                         <div class="extras" aria-multiselectable="true">

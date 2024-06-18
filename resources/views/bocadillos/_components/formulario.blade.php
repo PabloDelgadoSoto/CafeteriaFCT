@@ -43,7 +43,7 @@
         <div class="form-group">
             <label>Precio de descuento</label><br>
             <p>Dejar vacío en caso de no tener descuento</p>
-            <input type="number" step=".01" name="descuento" class="form-control" value="{{old('descuento', $bocadillo->descuento ?? '')}}" required ><br>
+            <input type="number" step=".01" name="descuento" class="form-control" value="{{old('descuento', $bocadillo->descuento ?? '')}}"  ><br>
             </div>
         <input type="submit" class="btn btn-primary" value="Guardar cambios">
     </form>
